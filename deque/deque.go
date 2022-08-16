@@ -74,11 +74,11 @@ func (deque *Deque[T]) PushBack(value T) {
 }
 
 func (deque *Deque[T]) PopFront() (value T) {
+	deque.mutex.Lock()
+	defer deque.mutex.Unlock()
 	if deque.Empty() {
 		panic("Cannot pop an element from an empty Deque")
 	}
-	deque.mutex.Lock()
-	defer deque.mutex.Unlock()
 	if deque.first.front >= cache_SIZE-1 {
 		deque.first = deque.first.next
 		deque.first.prev = nil
@@ -88,11 +88,11 @@ func (deque *Deque[T]) PopFront() (value T) {
 }
 
 func (deque *Deque[T]) PopBack() (value T) {
+	deque.mutex.Lock()
+	defer deque.mutex.Unlock()
 	if deque.Empty() {
 		panic("Cannot pop an element from an empty Deque")
 	}
-	deque.mutex.Lock()
-	defer deque.mutex.Unlock()
 	if deque.last.back <= 0 {
 		deque.last = deque.last.prev
 		deque.last.next = nil
