@@ -1,4 +1,5 @@
-package deque // import "stl/dequeue"
+package deque
+
 import "sync"
 
 const cache_SIZE = 1024
@@ -40,7 +41,7 @@ func (node *dequeNode[T]) popFront() (value T) {
 type Deque[T any] struct {
 	first *dequeNode[T]
 	last  *dequeNode[T]
-	size  int
+	size  uint64
 	mutex sync.Mutex
 }
 
@@ -73,6 +74,9 @@ func (deque *Deque[T]) PushBack(value T) {
 }
 
 func (deque *Deque[T]) PopFront() (value T) {
+	if deque.Empty() {
+		panic("Cannot pop an element from an empty Deque")
+	}
 	deque.mutex.Lock()
 	defer deque.mutex.Unlock()
 	if deque.first.front >= cache_SIZE-1 {
@@ -84,6 +88,9 @@ func (deque *Deque[T]) PopFront() (value T) {
 }
 
 func (deque *Deque[T]) PopBack() (value T) {
+	if deque.Empty() {
+		panic("Cannot pop an element from an empty Deque")
+	}
 	deque.mutex.Lock()
 	defer deque.mutex.Unlock()
 	if deque.last.back <= 0 {
@@ -94,15 +101,27 @@ func (deque *Deque[T]) PopBack() (value T) {
 	return deque.last.popBack()
 }
 
-func (deque *Deque[T]) Size() (size int) {
+func (deque *Deque[T]) Size() uint64 {
 	return deque.size
 }
 
+func (deque *Deque[T]) Empty() bool {
+	return deque.size <= 0
+}
+
 func (deque *Deque[T]) Front() (value T) {
+	if deque.Empty() {
+		var value T
+		return value
+	}
 	return deque.first.cache[deque.first.front+1]
 }
 
 func (deque *Deque[T]) Back() (value T) {
+	if deque.Empty() {
+		var value T
+		return value
+	}
 	return deque.last.cache[deque.last.back-1]
 }
 
