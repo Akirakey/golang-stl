@@ -14,11 +14,13 @@ type dequeNode[T any] struct {
 	prev  *dequeNode[T]
 }
 
+//Push item into the back of the deque
 func (node *dequeNode[T]) pushBack(value T) {
 	node.cache[node.back] = value
 	node.back += 1
 }
 
+//Push item into the front of the deque
 func (node *dequeNode[T]) pushFront(value T) {
 	node.cache[node.front] = value
 	node.front -= 1
