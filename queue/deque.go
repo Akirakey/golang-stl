@@ -1,10 +1,8 @@
 package queue
 
-import "sync"
-
 const cache_SIZE = 1024
 
-// Node of deque
+// Node of the Deque, should not be used as a single type.
 
 type dequeNode[T any] struct {
 	cache [cache_SIZE]T
@@ -14,13 +12,11 @@ type dequeNode[T any] struct {
 	prev  *dequeNode[T]
 }
 
-//Push item into the back of the deque
 func (node *dequeNode[T]) pushBack(value T) {
 	node.cache[node.back] = value
 	node.back += 1
 }
 
-//Push item into the front of the deque
 func (node *dequeNode[T]) pushFront(value T) {
 	node.cache[node.front] = value
 	node.front -= 1
@@ -38,18 +34,15 @@ func (node *dequeNode[T]) popFront() (value T) {
 	return value
 }
 
-// Deque
+// The Deque struct
 
 type Deque[T any] struct {
 	first *dequeNode[T]
 	last  *dequeNode[T]
 	size  uint64
-	mutex sync.Mutex
 }
 
 func (deque *Deque[T]) PushFront(value T) {
-	deque.mutex.Lock()
-	defer deque.mutex.Unlock()
 	if deque.first.front < 0 {
 		if deque.first.prev == nil {
 			deque.first.prev = &dequeNode[T]{front: cache_SIZE - 1, back: cache_SIZE}
@@ -62,8 +55,6 @@ func (deque *Deque[T]) PushFront(value T) {
 }
 
 func (deque *Deque[T]) PushBack(value T) {
-	deque.mutex.Lock()
-	defer deque.mutex.Unlock()
 	if deque.last.back >= cache_SIZE {
 		if deque.last.next == nil {
 			deque.last.next = &dequeNode[T]{front: -1, back: 0}
@@ -76,8 +67,6 @@ func (deque *Deque[T]) PushBack(value T) {
 }
 
 func (deque *Deque[T]) PopFront() (value T) {
-	deque.mutex.Lock()
-	defer deque.mutex.Unlock()
 	if deque.Empty() {
 		panic("Cannot pop element from an empty Deque")
 	}
@@ -90,8 +79,6 @@ func (deque *Deque[T]) PopFront() (value T) {
 }
 
 func (deque *Deque[T]) PopBack() (value T) {
-	deque.mutex.Lock()
-	defer deque.mutex.Unlock()
 	if deque.Empty() {
 		panic("Cannot pop element from an empty Deque")
 	}
