@@ -100,7 +100,3 @@ func (pq *PriorityQueue[T]) Head() T {
 func (pq *PriorityQueue[T]) Size() int {
 	return pq.tail
 }
-
-func (pq *PriorityQueue[T]) Arr() []T {
-	return pq.arr
-}
